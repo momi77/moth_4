@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div>
+    {% for post in posts %}
+        <div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">{{ post.name }}</h5>
+        <h6 class="card-title">{{ post.created_at }}</h6>
+        <p class="card-text">{{ post.content }}</p>
+        <p class="card-text">{{ post.rate }}</p>
+        <a href="/list_view/{{ post.id }}" class="btn btn-primary">Info</a>
+    </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock content %}
