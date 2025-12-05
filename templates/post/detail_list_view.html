@@ -1,9 +1,14 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block content %}
 <div>
         <div class="card" style="width: 18rem;">
-    <img src="..." class="card-img-top" alt="...">
+    {% if post.image %}
+    <img src="{{ post.image.url }}" class="card-img-top" alt="...">
+    {% else %}
+    <img src="{% static 'landscape-placeholder.svg' %}"  class="card-img-top" alt="...">
+    {% endif %}
     <div class="card-body">
         <h5 class="card-title">{{ post.name }}</h5>
         <h6 class="card-title">{{ post.created_at }}</h6>
@@ -13,3 +18,4 @@
     </div>
 </div>
 {% endblock content %}
+
