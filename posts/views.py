@@ -1,7 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from random import randint
 from posts.models import Post
+from .forms import PostCreateForm, CommentForm
 
 
 def test_view(request):
@@ -10,14 +11,42 @@ def test_view(request):
 
 
 def html_view(request):
-    return render(request,"base.html")
+    if request.method == "GET":
+        return render(request,"base.html")
 
 def list_view(request):
-    posts = Post.objects.all()
-    return render(request, "post/list_view.html", context={"posts": posts})
-
+    if request.method == "GET":
+        posts = Post.objects.all()
+        return render(request, "post/list_view.html", context={"posts": posts})
+# detail_view
 def post_view(request, post_id):
-    post = Post.objects.filter(id=post_id).first()
-    if not post:
-        return redirect("/list_view/")
-    return render(request, "post/detail_list_view.html", context={"post": post})
+    post = get_object_or_404(Post, id=post_id)
+    comments = post.comments.all().order_by('-created_at')
+
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.save()
+            return redirect('post_detail', post_id=post.id)
+    else:
+        comment_form = CommentForm()
+
+    return render(request, 'post/detail_list_view.html', {
+        'post': post,
+        'comments': comments,
+        'comment_form': comment_form,
+    })
+
+def post_create_view(request):
+    if request.method == "POST":
+        form = PostCreateForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('/list_view/')
+    else:
+        form = PostCreateForm()
+        return render(request, "post/post_create.html", context={"form": form})
+    
+    
