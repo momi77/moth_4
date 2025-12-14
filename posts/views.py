@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from random import randint
 from posts.models import Post
 from .forms import PostCreateForm, CommentForm
+from django.contrib.auth.decorators import login_required    
 
 
 def test_view(request):
@@ -13,11 +14,13 @@ def test_view(request):
 def html_view(request):
     if request.method == "GET":
         return render(request,"base.html")
-
+    
+@login_required(login_url='/login/')
 def list_view(request):
     if request.method == "GET":
         posts = Post.objects.all()
         return render(request, "post/list_view.html", context={"posts": posts})
+@login_required(login_url='/login/')    
 # detail_view
 def post_view(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -38,7 +41,7 @@ def post_view(request, post_id):
         'comments': comments,
         'comment_form': comment_form,
     })
-
+@login_required(login_url='/login/')
 def post_create_view(request):
     if request.method == "POST":
         form = PostCreateForm(request.POST, request.FILES)
