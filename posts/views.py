@@ -2,8 +2,18 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from random import randint
 from posts.models import Post
-from .forms import PostCreateForm, CommentForm
-from django.contrib.auth.decorators import login_required    
+from .forms import PostCreateForm, CommentForm, SearchForm
+from django.contrib.auth.decorators import login_required 
+from django.db.models import Q  
+
+
+"""
+posts = [post1, post2, post3, post4, post5, post6, post7, post8, post9, post10, post11, post12, post13, post14, post15, post16]
+limit = 5
+page = 3
+start = (page - 1) * limit
+end = page * limit
+"""
 
 
 def test_view(request):
@@ -17,11 +27,35 @@ def html_view(request):
     
 @login_required(login_url='/login/')
 def list_view(request):
+    posts = Post.objects.all()
+    form = SearchForm()
+    limit = 5
     if request.method == "GET":
-        posts = Post.objects.all()
-        return render(request, "post/list_view.html", context={"posts": posts})
-@login_required(login_url='/login/')    
+        print(request.GET)
+        search = request.GET.get('search')
+        category_id = request.GET.get('category_id')
+        tags_ids = request.GET.getlist('tags_ids')
+        ordering = request.GET.get('ordering')
+        page = int(request.GET.get('page')) if request.GET.get('page') else 1
+        if search:
+            posts = posts.filter(Q(title__icontains=search) | Q(content__icontains=search))
+        if category_id:
+            posts = posts.filter(category__id=category_id)
+        if tags_ids:
+            posts = posts.filter(tags__id__in=tags_ids)
+        if ordering:
+            posts = posts.order_by(ordering)   
+
+        post_count = posts.count()
+        insufficient = post_count % limit 
+        max_pages = post_count / limit if insufficient < 1 else post_count / limit + 1
+        start = (page - 1) * limit
+        end = page * limit
+        posts = posts[start:end]    
+
+        return render(request, "post/list_view.html", context={"posts": posts, "form": form, "max_pages": range(1, int(max_pages+1))})
 # detail_view
+@login_required(login_url='/login/')
 def post_view(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     comments = post.comments.all().order_by('-created_at')

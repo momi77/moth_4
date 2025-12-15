@@ -9,6 +9,12 @@ content varchar(1000)
 """
 """insert into post titlle, content VALUES(title1, content1) ==> Post.objects.create(title="title1", content="content1")
 """
+"""select * from post_tags where tag_id in [1,2,3];
+"""
+
+"""
+select * from post order by rate desc
+"""
 
 
 class Category(models.Model):
