@@ -3,14 +3,11 @@ from django import forms
 
 
 class RegisterForm(forms.Form):
+    avatar = forms.ImageField()
+    age = forms.IntegerField()
     username = forms.CharField(max_length=100)
     password = forms.CharField()
     password_confirm = forms.CharField()
-
-
-
-
-
 
 
     def clean(self):

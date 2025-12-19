@@ -14,24 +14,29 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
-from posts.views import test_view, html_view, list_view, post_view, post_create_view
-from users.views import register_view, login_view, logout_view
+from posts.views import test_view, html_view, list_view, post_view, post_create_view, post_update_view
+from users.views import register_view, login_view, logout_view, profile_view
 from django.conf.urls.static import static
 from django.conf import settings
 
 users_patterns = [
-    path("register/", register_view),
-    path("login/", login_view),
-    path("logout/", logout_view),
+    path("register/", register_view, name="register"),
+    path("login/", login_view, name="login"),
+    path("logout/", logout_view, name="logout"),
+    path("profile/", profile_view, name="profile" )
+    
 ]
 
 urlpatterns = users_patterns + [
     path('admin/', admin.site.urls),
-    path('test/', test_view),
-    path('', html_view),
-    path('list_view/', list_view),
-    path('list_view/<int:post_id>/', post_view),
-    path('list_view/create/', post_create_view),
+    path('test/', test_view, name='test'),
+    path('', html_view, name='home'),
+
+    path('list_view/', list_view, name='post_list'),
+    path('list_view/<int:post_id>/', post_view, name='post_detail'), 
+    path('list_view/create/', post_create_view, name='post_create'),
+    path('list_view/<int:post_id>/update/', post_update_view, name='post_update'),  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

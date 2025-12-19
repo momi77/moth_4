@@ -10,12 +10,27 @@
     <img src="{% static 'landscape-placeholder.svg' %}"  class="card-img-top" alt="...">
     {% endif %}
     <div class="card-body">
-        <h5 class="card-title">{{ post.name }}</h5>
+        <h5 class="card-title">{{ post.title }}</h5>
         <h6 class="card-title">{{ post.created_at }}</h6>
         <p class="card-text">{{ post.content }}</p>
         <p class="card-text">{{ post.rate }}</p>
     </div>
     </div>
 </div>
+{% if not request.user == post.author %}
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ comment_form.as_p }}
+    <button type="submit">Add comment</button>
+</form>
+{% endif %}
+{% for comment in comments %}
+<div class="card" style="width: 18rem; margin-top: 5px;">
+  <div class="card-body">
+    <h5 class="card-title">{{ comment.author }}</h5>
+    <p class="card-text">{{ comment.text }}</p>     
+  </div>
+</div>
+    {% endfor%}
 {% endblock content %}
 

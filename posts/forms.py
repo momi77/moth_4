@@ -10,11 +10,6 @@ class PostCreateForm(forms.ModelForm):
         fields = ['title', 'content', 'image']  
     
 
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ['author', 'text']
-
 
 class SearchForm(forms.Form):
     search = forms.CharField(max_length=100, required=False)
@@ -34,3 +29,14 @@ class SearchForm(forms.Form):
     )
 
     ordering = forms.ChoiceField(choices=ordering, required=False)
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['text']
+
+
+class PostUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Post
+        fields = ["image", "title", "content", "category", "tag"]
