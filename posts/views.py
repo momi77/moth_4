@@ -91,16 +91,18 @@ def post_create_view(request):
         return render(request, "post/post_create.html", context={"form": form})
     
 
+@login_required(login_url='/login/')
 def post_update_view(request, post_id):
-    post = Post.objects.filter(id=post_id).first()
-    if not post:
-        return redirect("/profile/")
+    post = get_object_or_404(Post, id=post_id)
+
     if request.method == "GET":
         form = PostUpdateForm(instance=post)
-        return render(request, "list_view/post_update.html", context={"form": form})
+        return render(request, "post/post_update.html", {"form": form})
+
     if request.method == "POST":
         form = PostUpdateForm(request.POST, request.FILES, instance=post)
-        if not form.is_valid():
-            return render(request, "list_view/post_update.html", context={"form": form})
-        form.save()
-        return redirect(f"/profile/")
+        if form.is_valid():
+            form.save()
+            return redirect("/profile/")
+        return render(request, "post/post_update.html", {"form": form})
+  
